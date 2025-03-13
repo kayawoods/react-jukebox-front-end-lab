@@ -4,11 +4,14 @@ import * as trackService from './services/trackService'
 import TrackList from './components/TrackList/TrackList';
 import TrackDetail from './components/TrackDetail/TrackDetail';
 import TrackForm from './components/TrackForm/TrackForm';
+import NowPlaying from './components/NowPlaying/NowPlaying';
 
 const App = () => {
   const [tracks, setTracks] = useState([]);
   const [selected, setSelected] = useState(null)
   const [isFormOpen, setIsFormOpen] = useState(false);
+  const [nowPlayingTrack, setNowPlayingTrack] = useState(null);
+  
 
   useEffect(() => {
     const fetchTracks = async () => {
@@ -74,22 +77,29 @@ const App = () => {
 
   const handleDeleteTrack = async (trackId) => {
     try {
-      const deletedTrack = await trackService.deleteTrack(trackId)
+      const deletedTrack = await trackService.deleteTrack(trackId);
 
       if (deletedTrack.err) {
-        throw new Errpr (deletedTrack.err)
+        throw new Error(deletedTrack.err);
       }
-      setTracks(tracks.filter((track) => trackId._id !== deletedTrack._id))
-      setSelected(null)
-      setIsFormOpen(false)
+
+      setTracks(tracks.filter((track) => track._id !== deletedTrack._id));
+      setSelected(null);
+      setIsFormOpen(false);
     } catch (err) {
-        console.log(err)
-      }
+      console.log(err);
     }
-  
+  };
+
+  const handleNowPlayingTrack = (track) => {
+    setNowPlayingTrack(track)
+  }
+
 
   return (
     <>
+       <NowPlaying
+     selected={nowPlayingTrack} />
       <TrackList 
       tracks={tracks} 
       handleSelect={handleSelect}
@@ -97,17 +107,36 @@ const App = () => {
       isFormOpen={isFormOpen}
       />
       {isFormOpen ? (
-      <TrackForm handleAddTrack={handleAddTrack}
-       selected={selected} handleUpdateTrack={handleUpdateTrack}/>
+      <TrackForm 
+      handleAddTrack={handleAddTrack} 
+      selected={selected}
+      handleUpdateTrack={handleUpdateTrack}
+      />
     ) : (
-      <TrackDetail selected={selected} 
-      handleFormView={handleFormView} 
+      <TrackDetail 
+      selected={selected} 
+      handleFormView={handleFormView}
       handleDeleteTrack={handleDeleteTrack}
+      handleNowPlayingTrack={handleNowPlayingTrack}
       />
     )}
     </>
   );
-}
+};
 
 
 export default App;
+
+
+
+
+
+
+
+
+
+
+
+
+
+
