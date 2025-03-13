@@ -65,14 +65,28 @@ const App = () => {
         track._id !== updatedTrack._id ? track : updatedTrack
       ));
       setTracks(updatedTrackList);
-      // If we don't set selected to the updated pet object, the details page will
-      // reference outdated data until the page reloads.
       setSelected(updatedTrack);
       setIsFormOpen(false);
     } catch (err) {
       console.log(err);
     }
   };
+
+  const handleDeleteTrack = async (trackId) => {
+    try {
+      const deletedTrack = await trackService.deleteTrack(trackId)
+
+      if (deletedTrack.err) {
+        throw new Errpr (deletedTrack.err)
+      }
+      setTracks(tracks.filter((track) => trackId._id !== deletedTrack._id))
+      setSelected(null)
+      setIsFormOpen(false)
+    } catch (err) {
+        console.log(err)
+      }
+    }
+  
 
   return (
     <>
@@ -83,9 +97,13 @@ const App = () => {
       isFormOpen={isFormOpen}
       />
       {isFormOpen ? (
-      <TrackForm handleAddTrack={handleAddTrack} selected={selected} handleUpdateTrack={handleUpdateTrack}/>
+      <TrackForm handleAddTrack={handleAddTrack}
+       selected={selected} handleUpdateTrack={handleUpdateTrack}/>
     ) : (
-      <TrackDetail selected={selected} handleFormView={handleFormView} />
+      <TrackDetail selected={selected} 
+      handleFormView={handleFormView} 
+      handleDeleteTrack={handleDeleteTrack}
+      />
     )}
     </>
   );
